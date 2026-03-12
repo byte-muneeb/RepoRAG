@@ -1,3 +1,13 @@
+---
+title: RepoRAG API
+emoji: 🔍
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 # RepoRAG
 
 RepoRAG is a full-stack repository intelligence app. You paste a GitHub URL, RepoRAG ingests the codebase, and you chat with grounded responses that reference repository context.
