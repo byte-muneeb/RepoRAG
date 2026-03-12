@@ -1,4 +1,18 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+function normalizeApiBaseUrl(rawBaseUrl) {
+  const value = (rawBaseUrl || '').trim();
+  if (!value) {
+    return '/api';
+  }
+
+  let normalized = value.replace(/\/+$/, '');
+  for (let index = 0; index < 2; index += 1) {
+    normalized = normalized.replace(/\/(?:api|v1)$/i, '');
+  }
+
+  return normalized || '/api';
+}
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL || '/api');
 
 const REPO_EVENT_NAMES = [
   'stream.connected',
@@ -248,3 +262,6 @@ export async function streamChatResponse({
     throw new Error('Chat stream ended before completion. Please try again.');
   }
 }
+
+
+
