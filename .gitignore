@@ -1,0 +1,24 @@
+# Python
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+backend/.venv/
+
+# Frontend build and dependencies
+frontend/.vite/
+frontend/build.log
+frontend/node_modules/
+frontend/dist/
+
+# Local environment files
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+
+# Editor and OS clutter
+.DS_Store
+Thumbs.db
