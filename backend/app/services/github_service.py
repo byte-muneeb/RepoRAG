@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import os
 import re
 import subprocess
@@ -91,18 +91,17 @@ class GitHubService:
     async def resolve_repository(self, repo_input: str, branch: str | None) -> ResolvedGitHubRepo:
         public_url, branch_candidates = self._normalize_repo_input(repo_input)
         clone_url = self._build_clone_url(public_url)
-
-        await self._ensure_remote_exists(clone_url, public_url)
+        effective_clone_url = await self._ensure_remote_exists(clone_url, public_url)
 
         resolved_branch = branch.strip() if branch else None
         if resolved_branch:
-            await self._ensure_branch_exists(clone_url, public_url, resolved_branch)
+            await self._ensure_branch_exists(effective_clone_url, public_url, resolved_branch)
         elif branch_candidates:
-            resolved_branch = await self._resolve_branch_candidates(clone_url, public_url, branch_candidates)
+            resolved_branch = await self._resolve_branch_candidates(effective_clone_url, public_url, branch_candidates)
         else:
-            resolved_branch = await self._resolve_default_branch(clone_url, public_url)
+            resolved_branch = await self._resolve_default_branch(effective_clone_url, public_url)
 
-        return ResolvedGitHubRepo(public_url=public_url, clone_url=clone_url, branch=resolved_branch)
+        return ResolvedGitHubRepo(public_url=public_url, clone_url=effective_clone_url, branch=resolved_branch)
 
     async def clone_public_repo(self, repo_url: str, branch: str | None, destination: Path) -> Path:
         if not repo_url.startswith("https://github.com/"):
@@ -116,10 +115,18 @@ class GitHubService:
         await self._run_clone(clone_url, repo_url, branch, destination)
         return destination
 
-    async def _ensure_remote_exists(self, clone_url: str, public_url: str) -> None:
+    async def _ensure_remote_exists(self, clone_url: str, public_url: str) -> str:
         completed = await self._run_git(["git", "ls-remote", clone_url, "HEAD"])
-        if completed.returncode != 0:
-            raise RuntimeError(self._sanitize_git_error(completed, public_url, clone_url, "GitHub repository check failed"))
+        if completed.returncode == 0:
+            return clone_url
+
+        if self._should_retry_without_token(completed, clone_url, public_url):
+            public_completed = await self._run_git(["git", "ls-remote", public_url, "HEAD"])
+            if public_completed.returncode == 0:
+                return public_url
+            raise RuntimeError(self._sanitize_git_error(public_completed, public_url, public_url, "GitHub repository check failed"))
+
+        raise RuntimeError(self._sanitize_git_error(completed, public_url, clone_url, "GitHub repository check failed"))
 
     async def _ensure_branch_exists(self, clone_url: str, public_url: str, branch: str) -> None:
         completed = await self._run_git(["git", "ls-remote", "--heads", clone_url, branch])
@@ -163,6 +170,27 @@ class GitHubService:
         completed = await self._run_git(cmd)
         if completed.returncode == 0:
             return
+
+        if self._should_retry_without_token(completed, clone_url, public_url):
+            public_cmd = [
+                "git",
+                "clone",
+                "--depth",
+                "1",
+                "--single-branch",
+                "--filter=blob:none",
+            ]
+            if branch:
+                public_cmd.extend(["--branch", branch])
+            public_cmd.extend([public_url, str(destination)])
+
+            public_completed = await self._run_git(public_cmd)
+            if public_completed.returncode == 0:
+                return
+
+            branch_hint = f" (branch: {branch})" if branch else ""
+            message = self._sanitize_git_error(public_completed, public_url, public_url, f"Git clone failed{branch_hint}")
+            raise RuntimeError(message)
 
         branch_hint = f" (branch: {branch})" if branch else ""
         message = self._sanitize_git_error(completed, public_url, clone_url, f"Git clone failed{branch_hint}")
@@ -235,6 +263,26 @@ class GitHubService:
         if self.github_token:
             sanitized = sanitized.replace(self.github_token, "***")
         return f"{prefix}: {sanitized}"
+
+    def _should_retry_without_token(
+        self,
+        completed: subprocess.CompletedProcess[str],
+        clone_url: str,
+        public_url: str,
+    ) -> bool:
+        if not self.github_token or clone_url == public_url:
+            return False
+
+        output = ((completed.stderr or "") + "\\n" + (completed.stdout or "")).lower()
+        retry_markers = (
+            "authentication failed",
+            "could not read username",
+            "repository not found",
+            "invalid username or token",
+            "access denied",
+            "403",
+        )
+        return any(marker in output for marker in retry_markers)
 
     @staticmethod
     def _validate_owner_repo(owner: str, repo: str) -> None:
