@@ -1,13 +1,3 @@
----
-title: RepoRAG API
-emoji: 🔍
-colorFrom: blue
-colorTo: green
-sdk: docker
-pinned: false
-app_port: 7860
----
-
 # RepoRAG
 
 RepoRAG is a full-stack repository intelligence app. You paste a GitHub URL, RepoRAG ingests the codebase, and you chat with grounded responses that reference repository context.
@@ -36,7 +26,8 @@ REPORAG/
   docs/                    # Architecture and deployment documentation
   infra/                   # Local Postgres/Redis compose setup
   scripts/                 # Bootstrap, dev startup, deploy verification
-  render.yaml              # Render backend deployment manifest
+  Dockerfile               # Backend container image for Koyeb deployment
+  render.yaml              # Optional Render backend deployment manifest
 ```
 
 ## Prerequisites
@@ -101,7 +92,7 @@ backend/.venv/Scripts/python.exe -m pytest -q backend/tests
 Recommended free split:
 
 - Frontend on Vercel
-- Backend on Render
+- Backend on Koyeb (from this repo Dockerfile)
 - Optional vector storage on Supabase free tier
 
 See [docs/deployment/free-deployment.md](docs/deployment/free-deployment.md) for the full, tested flow.

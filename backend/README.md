@@ -65,6 +65,6 @@ Set-Location backend
 
 ## Deployment Notes
 
-- Render backend deployment is configured in the repo root `render.yaml`.
+- Koyeb deployment can use the repo root `Dockerfile` directly.
 - Set production CORS via `CORS_ORIGINS` or `CORS_ORIGIN_REGEX`.
 - Pair with frontend `VITE_API_BASE_URL` pointing at the deployed backend.

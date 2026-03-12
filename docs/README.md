@@ -10,7 +10,7 @@ This folder contains architecture and deployment references for the RepoRAG work
   - data mode behavior and tradeoffs
 
 - [Free Deployment Guide](deployment/free-deployment.md)
-  - Render + Vercel setup
+  - Koyeb + Vercel setup
   - required environment variables
   - production and local verification checklist
 

@@ -3,18 +3,18 @@
 RepoRAG supports a no-cost split deployment model:
 
 - Frontend: Vercel
-- Backend: Render (web service)
+- Backend: Koyeb (web service from Dockerfile)
 - Optional retrieval persistence: Supabase free tier
 
-## 1. Deploy Backend on Render
+## 1. Deploy Backend on Koyeb
 
-1. Create a new Render web service from this repository.
-2. Keep the service root at the repository root so Render can detect `render.yaml`.
-3. Confirm it uses the `reporag-backend` service configuration.
+1. Create a new Koyeb web service from this GitHub repository.
+2. Choose Docker deployment and select the root `Dockerfile`.
+3. Set exposed HTTP port to `8000` (or leave auto-detect if Koyeb picks it from the image).
 
 Required backend environment variables:
 
-- `PORT=10000`
+- `PORT=8000`
 - `ENVIRONMENT=production`
 - `CORS_ORIGINS=["https://your-project.vercel.app"]`
   - or `CORS_ORIGIN_REGEX=https://.*\.vercel\.app$` for preview deployments
@@ -32,15 +32,15 @@ Optional/advanced:
 1. Import the same repository into Vercel.
 2. Set the project root directory to `frontend`.
 3. Add environment variable:
-   - `VITE_API_BASE_URL=https://your-render-service.onrender.com`
+   - `VITE_API_BASE_URL=https://your-koyeb-service-url`
 4. Deploy.
 
 ## 3. Validate Production Health
 
 After both deployments are live:
 
-1. Open `https://your-render-service.onrender.com/v1/health`
-2. Open `https://your-render-service.onrender.com/v1/health/deps`
+1. Open `https://your-koyeb-service-url/v1/health`
+2. Open `https://your-koyeb-service-url/v1/health/deps`
 3. Confirm frontend can:
    - submit a repository URL
    - receive loading events
