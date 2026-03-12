@@ -2,6 +2,10 @@
 
 RepoRAG is a full-stack repository intelligence app. You paste a GitHub URL, RepoRAG ingests the codebase, and you chat with grounded responses that reference repository context.
 
+## Live App
+
+- Production URL: https://repo-rag-nu.vercel.app/
+
 The workspace is structured as a monorepo with:
 
 - a React + Vite frontend
@@ -103,3 +107,4 @@ See [docs/deployment/free-deployment.md](docs/deployment/free-deployment.md) for
 - [docs/README.md](docs/README.md)
 - [docs/architecture/full-stack-blueprint.md](docs/architecture/full-stack-blueprint.md)
 - [docs/deployment/free-deployment.md](docs/deployment/free-deployment.md)
+
