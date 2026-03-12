@@ -22,11 +22,12 @@ The workspace is structured as a monorepo with:
 ```text
 REPORAG/
   backend/                 # FastAPI API, ingestion worker, retrieval services
+    Dockerfile             # Backend image for Hugging Face Spaces drag-and-drop deploy
   frontend/                # React UI, loading/workspace stages, RepoVIEW graph
   docs/                    # Architecture and deployment documentation
   infra/                   # Local Postgres/Redis compose setup
   scripts/                 # Bootstrap, dev startup, deploy verification
-  Dockerfile               # Backend container image for Koyeb deployment
+  Dockerfile               # Optional root image for generic OCI deployments
   render.yaml              # Optional Render backend deployment manifest
 ```
 
@@ -92,7 +93,7 @@ backend/.venv/Scripts/python.exe -m pytest -q backend/tests
 Recommended free split:
 
 - Frontend on Vercel
-- Backend on Koyeb (from this repo Dockerfile)
+- Backend on Hugging Face Spaces (Docker SDK)
 - Optional vector storage on Supabase free tier
 
 See [docs/deployment/free-deployment.md](docs/deployment/free-deployment.md) for the full, tested flow.

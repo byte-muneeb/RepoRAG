@@ -65,6 +65,7 @@ Set-Location backend
 
 ## Deployment Notes
 
-- Koyeb deployment can use the repo root `Dockerfile` directly.
+- Hugging Face Spaces deployment can use `backend/Dockerfile` with a direct file upload workflow.
+- Upload `Dockerfile`, `requirements.txt`, `app/`, and `db/` into the Space root.
 - Set production CORS via `CORS_ORIGINS` or `CORS_ORIGIN_REGEX`.
 - Pair with frontend `VITE_API_BASE_URL` pointing at the deployed backend.

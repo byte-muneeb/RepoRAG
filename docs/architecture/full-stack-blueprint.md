@@ -56,7 +56,7 @@ RepoRAG is a staged repository intelligence application:
 ## Deployment Topology
 
 - Frontend: Vercel static hosting (`frontend/`)
-- Backend: Koyeb web service (repo `Dockerfile`)
+- Backend: Hugging Face Spaces Docker runtime (manual upload from `backend/`)
 - Optional: Supabase free tier for vector persistence
 
 See deployment details in `docs/deployment/free-deployment.md`.
