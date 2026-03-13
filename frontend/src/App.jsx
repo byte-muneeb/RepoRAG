@@ -8,6 +8,31 @@ import { LoadingView } from './components/LoadingView';
 import { WorkspaceView } from './components/WorkspaceView';
 import { createRepository, validateGithubRepoUrl } from './lib/apiClient';
 
+function useHasFinePointer() {
+  const [hasFinePointer, setHasFinePointer] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      setHasFinePointer(false);
+      return undefined;
+    }
+
+    const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setHasFinePointer(mediaQuery.matches);
+
+    update();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', update);
+      return () => mediaQuery.removeEventListener('change', update);
+    }
+
+    mediaQuery.addListener(update);
+    return () => mediaQuery.removeListener(update);
+  }, []);
+
+  return hasFinePointer;
+}
+
 function CustomCursor() {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
@@ -252,8 +277,8 @@ function Background3DScene({ currentStage }) {
 
 function UrlInputView({ repositoryUrl, onRepositoryUrlChange, onAnalyze, isSubmitting, validationError }) {
   return (
-    <div className="w-full max-w-3xl pointer-events-auto">
-      <div className="p-8 rounded-2xl bg-neutral-900/40 backdrop-blur-2xl border border-indigo-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.5)] pointer-events-auto">
+    <div className="w-full max-w-3xl px-1 sm:px-0 pointer-events-auto">
+      <div className="p-5 sm:p-8 rounded-2xl bg-neutral-900/40 backdrop-blur-2xl border border-indigo-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.5)] pointer-events-auto">
         <div className="inline-flex items-center gap-2 rounded-lg border border-indigo-400/30 bg-indigo-500/10 px-3 py-1.5 text-xs text-indigo-300">
           <FileCode2 className="h-3.5 w-3.5" />
           Repository Gateway
@@ -282,7 +307,7 @@ function UrlInputView({ repositoryUrl, onRepositoryUrlChange, onAnalyze, isSubmi
           <button
             onClick={onAnalyze}
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-500 disabled:opacity-60"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-500 disabled:opacity-60"
           >
             {isSubmitting ? 'Starting...' : 'Analyze'}
             <SendHorizontal className="h-4 w-4" />
@@ -380,12 +405,12 @@ function HeroLandingView({ onAnalyzeRepository, analyzeError }) {
   return (
     <div className="relative z-10 w-full">
       <section className="min-h-screen flex items-center justify-center">
-        <div className="max-w-7xl mx-auto px-6 w-full text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="text-7xl sm:text-8xl md:text-9xl font-bold tracking-tight text-neutral-50"
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight text-neutral-50"
           >
             REPORAG
           </motion.h1>
@@ -409,7 +434,7 @@ function HeroLandingView({ onAnalyzeRepository, analyzeError }) {
       </section>
 
       <section className="min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-6 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -446,7 +471,7 @@ function HeroLandingView({ onAnalyzeRepository, analyzeError }) {
       </section>
 
       <section className="min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-6 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -481,7 +506,7 @@ function HeroLandingView({ onAnalyzeRepository, analyzeError }) {
       </section>
 
       <section className="min-h-screen flex items-center pb-20">
-        <div className="max-w-7xl mx-auto px-6 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -515,6 +540,8 @@ export default function App() {
   const [currentStage, setCurrentStage] = useState('LANDING');
   const [activeRepoId, setActiveRepoId] = useState(null);
   const [analyzeError, setAnalyzeError] = useState('');
+  const hasFinePointer = useHasFinePointer();
+  const showCustomCursor = hasFinePointer && currentStage !== 'WORKSPACE';
 
   function returnToLanding() {
     setCurrentStage('LANDING');
@@ -537,11 +564,11 @@ export default function App() {
   return (
     <div
       className={`relative w-full min-h-screen bg-neutral-950 text-neutral-50 ${
-        currentStage === 'WORKSPACE' ? 'cursor-auto' : 'cursor-none'
+        showCustomCursor ? 'cursor-none' : 'cursor-auto'
       }`}
     >
       <Background3DScene currentStage={currentStage} />
-      {currentStage !== 'WORKSPACE' && <CustomCursor />}
+      {showCustomCursor && <CustomCursor />}
 
       <AnimatePresence mode="wait">
         {currentStage === 'LANDING' && (

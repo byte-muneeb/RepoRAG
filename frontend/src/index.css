@@ -16,6 +16,7 @@ body {
   min-height: 100vh;
   background: #0a0a0a;
   color: #fafafa;
+  overflow-x: hidden;
 }
 
 * {
@@ -45,4 +46,12 @@ textarea {
 
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }

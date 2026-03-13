@@ -634,7 +634,7 @@ function RepositoryGraphTab({ treeNodes, treeError, selectedTargets }) {
 
       {!!treeNodes.length && (
         <>
-          <div className="absolute left-3 top-3 z-20 rounded-lg border border-cyan-300/25 bg-slate-950/78 px-3 py-2 text-[11px] text-neutral-200">
+          <div className="hidden sm:block absolute left-3 top-3 z-20 rounded-lg border border-cyan-300/25 bg-slate-950/78 px-3 py-2 text-[11px] text-neutral-200">
             <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-300">RepoVIEW Engine</p>
             <p className="mt-1">hierarchy-aware cluster layout</p>
             <p className="text-neutral-400">drag rotate | wheel zoom | right-drag pan</p>
@@ -675,7 +675,7 @@ function RepositoryGraphTab({ treeNodes, treeError, selectedTargets }) {
             </Canvas>
           </div>
 
-          <div className="absolute right-3 top-3 z-20 max-w-[360px] rounded-lg border border-cyan-300/30 bg-slate-950/85 px-3 py-2 text-[11px] text-cyan-100">
+          <div className="hidden md:block absolute right-3 top-3 z-20 max-w-[360px] rounded-lg border border-cyan-300/30 bg-slate-950/85 px-3 py-2 text-[11px] text-cyan-100">
             <p className="text-[10px] uppercase tracking-[0.16em] text-cyan-300">RepoVIEW</p>
             {activeNode ? (
               <>
@@ -698,7 +698,7 @@ function RepositoryGraphTab({ treeNodes, treeError, selectedTargets }) {
             )}
           </div>
 
-          <div className="absolute left-3 bottom-3 z-20 rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] text-neutral-300">
+          <div className="hidden sm:block absolute left-3 bottom-3 z-20 rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] text-neutral-300">
             <p>RepoVIEW nodes: {Math.min(treeNodes.length, MAX_GRAPH_NODES)} visualized</p>
             <p>files: {fileCount} | folders: {folderCount}</p>
             <p>clusters: {clusterCount}</p>
@@ -746,8 +746,8 @@ function ChatPanel({
             <div
               className={
                 item.role === 'user'
-                  ? 'max-w-[90%] rounded-2xl rounded-tr-sm bg-indigo-600 px-3.5 py-3 text-sm text-white'
-                  : 'max-w-[90%] rounded-2xl rounded-tl-sm border border-white/15 bg-neutral-800/80 px-3.5 py-3 text-sm text-neutral-200'
+                  ? 'max-w-[95%] sm:max-w-[90%] rounded-2xl rounded-tr-sm bg-indigo-600 px-3.5 py-3 text-sm text-white'
+                  : 'max-w-[95%] sm:max-w-[90%] rounded-2xl rounded-tl-sm border border-white/15 bg-neutral-800/80 px-3.5 py-3 text-sm text-neutral-200'
               }
             >
               {item.role === 'assistant' ? (
@@ -803,7 +803,7 @@ function ChatPanel({
                   className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/35 bg-indigo-500/15 px-2 py-0.5 text-[11px] text-indigo-100 hover:bg-indigo-500/25"
                 >
                   {target.type === 'folder' ? <Folder className="h-3 w-3" /> : <FileCode className="h-3 w-3" />}
-                  <span className="max-w-[260px] truncate">{target.path}</span>
+                  <span className="max-w-[150px] sm:max-w-[260px] truncate">{target.path}</span>
                   <X className="h-3 w-3" />
                 </button>
               ))}
@@ -1140,8 +1140,8 @@ export function WorkspaceView({ repoId, onBackToLanding }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
     >
-      <div className="absolute top-5 left-1/2 -translate-x-1/2 pointer-events-auto rounded-xl border border-white/10 bg-neutral-900/95 px-3 py-2 backdrop-blur-md text-[11px] text-neutral-300">
-        <div className="flex items-center gap-2">
+      <div className="absolute top-3 left-1/2 z-20 w-[calc(100%-1.5rem)] max-w-max -translate-x-1/2 pointer-events-auto rounded-xl border border-white/10 bg-neutral-900/95 px-3 py-2 backdrop-blur-md text-[11px] text-neutral-300 sm:top-5 sm:w-auto">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
           <span>Workspace {repoId ? `repo:${repoId.slice(0, 8)}` : 'no-repo'}</span>
           <div className="hidden sm:flex items-center gap-1.5">
             <HealthPill label="LLM" ok={Boolean(systemHealth?.groq?.configured)} />
@@ -1151,9 +1151,9 @@ export function WorkspaceView({ repoId, onBackToLanding }) {
         </div>
       </div>
 
-      <div className="absolute inset-0 px-3 sm:px-5 pb-4 pt-16 pointer-events-auto">
+      <div className="absolute inset-0 px-3 sm:px-5 pb-4 pt-14 sm:pt-16 pointer-events-auto">
         <Panel className="h-full min-h-0 flex flex-col overflow-hidden">
-          <div className="border-b border-white/10 px-3 py-2 flex items-center gap-2">
+          <div className="border-b border-white/10 px-3 py-2 flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setActiveTab('chat')}
@@ -1180,14 +1180,15 @@ export function WorkspaceView({ repoId, onBackToLanding }) {
               </span>
             </button>
 
-            <div className="ml-auto">
+            <div className="w-full sm:w-auto sm:ml-auto">
               <button
                 type="button"
                 onClick={onBackToLanding}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-neutral-300 hover:text-white hover:border-white/25 transition-colors"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-neutral-300 hover:text-white hover:border-white/25 transition-colors"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                Back to Landing
+                <span className="hidden sm:inline">Back to Landing</span>
+                <span className="sm:hidden">Back</span>
               </button>
             </div>
           </div>
